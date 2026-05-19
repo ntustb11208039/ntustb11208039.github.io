@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小Lin 財金學習生態網 | Finance Students Hub</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        finance: {
+                            50: '#f0f4f8',
+                            100: '#dbeafe',
+                            800: '#1e293b',
+                            900: '#0f172a',
+                            gold: '#fbbf24',
+                            goldHover: '#f59e0b',
+                            accent: '#3b82f6',
+                            cardBg: '#1e293b'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap');
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #0f172a;
+            color: #f1f5f9;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+        /* Fade-in animations */
+        .fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-blue-500 selection:text-white">
+
+    <!-- 頂部導航欄 -->
+    <header class="sticky top-0 z-50 bg-finance-900/95 backdrop-blur border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo & Brand -->
+                <div class="flex items-center space-x-3">
+                    <div class="bg-gradient-to-r from-finance-gold to-yellow-500 p-2.5 rounded-xl shadow-md shadow-amber-500/20">
+                        <!-- SVG Finance Icon -->
+                        <svg class="w-6 h-6 text-slate-900" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="text-lg font-black tracking-wider text-white">小Lin 財金學習生態網</span>
+                        <span class="hidden sm:inline-block ml-2 text-xs text-finance-gold font-mono bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">NotebookLM 唯一知識庫版本</span>
+                    </div>
+                </div>
+
+                <!-- 搜尋框 (快速檢索) -->
+                <div class="hidden md:block relative w-80">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    <input type="text" id="globalSearchInput" oninput="handleGlobalSearch()" placeholder="搜尋名詞、法規或金融事件..." class="w-full pl-10 pr-4 py-2 bg-slate-800/80 border border-slate-700 rounded-xl text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-finance-accent focus:border-transparent transition-all">
+                </div>
+
+                <!-- 響應式移動端菜單按鈕 -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobileMenuBtn" onclick="toggleMobileMenu()" class="text-slate-400 hover:text-white focus:outline-none">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 導航分頁 Tabs -->
+        <div class="bg-slate-900 border-t border-slate-800/80">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <nav class="flex space-x-1 sm:space-x-4 py-2 overflow-x-auto" aria-label="Tabs">
+                    <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200 whitespace-nowrap bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/15">
+                        學習總覽
+                    </button>
+                    <button onclick="switchTab('glossary')" id="tab-glossary" class="tab-btn px-4 py-2 text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all duration-200 whitespace-nowrap">
+                        核心名詞解析
+                    </button>
+                    <button onclick="switchTab('sandbox')" id="tab-sandbox" class="tab-btn px-4 py-2 text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all duration-200 whitespace-nowrap flex items-center gap-1.5">
+                        <span class="w-2 h-2 bg-emerald-500 rounded-full animate-ping"></span> 金融模擬沙盒
+                    </button>
+                    <button onclick="switchTab('resources')" id="tab-resources" class="tab-btn px-4 py-2 text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all duration-200 whitespace-nowrap">
+                        專題資源庫
+                    </button>
+                    <button onclick="switchTab('faq')" id="tab-faq" class="tab-btn px-4 py-2 text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all duration-200 whitespace-nowrap">
+                        常見問答與測驗
+                    </button>
+                </nav>
+            </div>
+        </div>
+
+        <!-- 行動端導航與搜尋 (折疊菜單) -->
+        <div id="mobileMenu" class="hidden md:hidden bg-slate-900 px-4 pt-2 pb-4 space-y-3 border-t border-slate-800">
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+                <input type="text" id="mobileSearchInput" oninput="handleGlobalSearch(true)" placeholder="快速搜尋..." class="w-full pl-10 pr-4 py-2 bg-slate-800 border border-slate-700 rounded-xl text-slate-200 focus:outline-none">
+            </div>
+        </div>
+    </header>
+
+    <!-- 主體內容區 -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+
+        <!-- ==================== PAGE: DASHBOARD ==================== -->
+        <section id="page-dashboard" class="fade-in space-y-8">
+            <!-- 英雄看板 -->
+            <div class="relative overflow-hidden bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl border border-slate-700 p-8 shadow-2xl">
+                <div class="absolute -right-12 -bottom-12 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
+                <div class="absolute -left-12 -top-12 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl"></div>
+                
+                <div class="relative z-10 max-w-3xl">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20 mb-4">
+                        💡 掌握核心財金脈絡，打破爆款邏輯、沉澱信任邏輯
+                    </span>
+                    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white mb-4 leading-tight">
+                        用「人話」剖析世界金融體系，<br class="hidden sm:inline">打造你的<span class="text-transparent bg-clip-text bg-gradient-to-r from-finance-gold to-amber-400">財金知識樹</span>
+                    </h1>
+                    <p class="text-slate-300 text-lg mb-6 leading-relaxed">
+                        本學習平台嚴格基於 <span class="text-finance-gold font-semibold">NotebookLM 核心文檔</span> 構建，為你抽絲剝繭揭密「全租房危機」、「12萬億化債分稅制」、「巨災債券對賭」、「VIE協議控制」與「美聯儲QE印鈔機制」。拒絕枯燥的理論，用嚴密且直觀的邏輯打通財金任督二脈！
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <button onclick="switchTab('sandbox')" class="px-6 py-3 bg-gradient-to-r from-finance-gold to-amber-500 text-slate-950 font-bold rounded-xl shadow-lg shadow-amber-500/20 hover:scale-[1.02] transition-transform">
+                            進入模擬沙盒 🚀
+                        </button>
+                        <button onclick="switchTab('glossary')" class="px-6 py-3 bg-slate-700 text-slate-200 font-semibold rounded-xl hover:bg-slate-600 transition-colors">
+                            瀏覽核心名詞
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 小Lin說：名詞解釋導讀 (精選三張動態大卡片) -->
+            <div>
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+                        <span class="text-finance-gold">✨</span> 本週主打名詞導讀
+                    </h2>
+                    <button onclick="switchTab('glossary')" class="text-sm font-semibold text-finance-accent hover:text-blue-400">
+                        查看全部名詞 &rarr;
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- 卡片 1: 全租房 -->
+                    <div class="bg-slate-800/60 rounded-2xl border border-slate-700 p-6 flex flex-col justify-between hover:border-slate-600 hover:-translate-y-1 transition-all duration-300">
+                        <div>
+                            <span class="text-xs font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded">韓國獨創金融</span>
+                            <h3 class="text-xl font-bold text-white mt-3">全租房模式 (Jeonse)</h3>
+                            <p class="text-sm text-slate-400 mt-2 leading-relaxed">
+                                租客提供一筆相當於房價 60-80% 的巨額押金給房東，免付月租；兩年期滿後房東全款歸還。本質上是租客將利息權讓渡，房東則獲得無息高槓桿資金進行再投資！
+                            </p>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-slate-700/50 flex justify-between items-center">
+                            <span class="text-xs text-slate-500">源自《韓國房地產危機》</span>
+                            <button onclick="openGlossaryDetail('jeonse')" class="text-xs font-semibold text-finance-gold hover:underline">深入硬核解析 &rarr;</button>
+                        </div>
+                    </div>
+
+                    <!-- 卡片 2: 12萬億化債 -->
+                    <div class="bg-slate-800/60 rounded-2xl border border-slate-700 p-6 flex flex-col justify-between hover:border-slate-600 hover:-translate-y-1 transition-all duration-300">
+                        <div>
+                            <span class="text-xs font-mono font-bold text-amber-400 bg-amber-500/10 px-2 py-1 rounded">財政改革大棋</span>
+                            <h3 class="text-xl font-bold text-white mt-3">12萬億地方化債</h3>
+                            <p class="text-sm text-slate-400 mt-2 leading-relaxed">
+                                針對地方政府龐大「隱性債務」（城投債、非標融資），發行利率約 2% 的「專項債」進行置換，消除高於 10% 的高息炸彈，3年節省 6000 億利息。
+                            </p>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-slate-700/50 flex justify-between items-center">
+                            <span class="text-xs text-slate-500">源自《中國財政體系》</span>
+                            <button onclick="openGlossaryDetail('debt-swap')" class="text-xs font-semibold text-finance-gold hover:underline">深入硬核解析 &rarr;</button>
+                        </div>
+                    </div>
+
+                    <!-- 卡片 3: 巨災債券 -->
+                    <div class="bg-slate-800/60 rounded-2xl border border-slate-700 p-6 flex flex-col justify-between hover:border-slate-600 hover:-translate-y-1 transition-all duration-300">
+                        <div>
+                            <span class="text-xs font-mono font-bold text-rose-400 bg-rose-500/10 px-2 py-1 rounded">衍生品大對賭</span>
+                            <h3 class="text-xl font-bold text-white mt-3">巨災債券 (Cat Bond)</h3>
+                            <p class="text-sm text-slate-400 mt-2 leading-relaxed">
+                                投資人與大自然進行的一場豪賭。在沒有巨災發生時，你可以穩拿無風險利率加超額溢價（如 10%）；一旦天災爆發，你的本金將會被瞬間用來賠付！
+                            </p>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-slate-700/50 flex justify-between items-center">
+                            <span class="text-xs text-slate-500">源自《最賺錢的投資品》</span>
+                            <button onclick="openGlossaryDetail('cat-bond')" class="text-xs font-semibold text-finance-gold hover:underline">深入硬核解析 &rarr;</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 小Lin說：經典邏輯語錄 -->
+            <div class="bg-slate-800/30 rounded-2xl border border-slate-800 p-6 text-center">
+                <p class="text-slate-400 italic text-sm">
+                    "在繁雜的財金世界中，不要陷入『爆款邏輯』去追求零碎細節，而是要建立起『信任邏輯』與『知識樹體系』，理清各個因素之間的權重，你才能洞悉市場的真實全貌。" — 小Lin
+                </p>
+            </div>
+        </section>
+
+        <!-- ==================== PAGE: GLOSSARY ==================== -->
+        <section id="page-glossary" class="hidden fade-in space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                        🕵️‍♂️ 核心財金名詞解析
+                    </h2>
+                    <p class="text-slate-400 text-sm mt-1">
+                        精選自文檔的關鍵金融名詞，配備「小Lin大白話」和「硬核機制」雙重視角。
+                    </p>
+                </div>
+                <!-- 篩選 Tab -->
+                <div class="flex gap-2 overflow-x-auto pb-1" id="glossaryFilters">
+                    <button onclick="filterGlossary('all')" class="g-filter-btn px-3 py-1.5 text-xs font-semibold bg-finance-accent text-white rounded-lg whitespace-nowrap">全部</button>
+                    <button onclick="filterGlossary('system')" class="g-filter-btn px-3 py-1.5 text-xs font-semibold text-slate-400 bg-slate-800 hover:text-white rounded-lg whitespace-nowrap">金融體制 & 政策</button>
+                    <button onclick="filterGlossary('derivatives')" class="g-filter-btn px-3 py-1.5 text-xs font-semibold text-slate-400 bg-slate-800 hover:text-white rounded-lg whitespace-nowrap">衍生工具 & 產品</button>
+                    <button onclick="filterGlossary('corp')" class="g-filter-btn px-3 py-1.5 text-xs font-semibold text-slate-400 bg-slate-800 hover:text-white rounded-lg whitespace-nowrap">資本 & 企業架構</button>
+                </div>
+            </div>
+
+            <!-- 名詞卡片 Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="glossaryGrid">
+                <!-- 動態注入 -->
+            </div>
+        </section>
+
+        <!-- ==================== PAGE: SANDBOX (SIMULATOR) ==================== -->
+        <section id="page-sandbox" class="hidden fade-in space-y-8">
+            <div class="border-b border-slate-800 pb-4">
+                <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                    🎮 金融模擬沙盒 (Financial Sandbox)
+                </h2>
+                <p class="text-slate-400 text-sm mt-1">
+                    通過調整關鍵參數，實時觀察槓桿機制、泡沫形成、匯率利差對金融市場產生的化學反應。
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                
+                <!-- 模擬器 1: 韓國全租房泡沫爆倉模擬器 -->
+                <div class="bg-slate-800/50 rounded-2xl border border-slate-700 p-6 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                                <span class="p-1 bg-red-500/10 text-red-400 rounded">💥</span> 韓國全租房泡沫爆倉模擬器
+                            </h3>
+                            <span class="text-xs font-mono bg-red-500/10 text-red-400 px-2 py-0.5 rounded border border-red-500/20">信用與地產槓桿</span>
+                        </div>
+                        <p class="text-slate-400 text-xs leading-relaxed mb-6">
+                            還記得那個名下擁有 1139 套房的「公寓大王」金先生嗎？全租房在房價大漲、利率極低時是一台資金放大器，但當加息與房價下跌雙重暴擊時，這台機器會如何頃刻倒塌？
+                        </p>
+
+                        <!-- 控制面板 -->
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between text-xs font-medium mb-1">
+                                    <span class="text-slate-300">初始購置房價 (1套)：</span>
+                                    <span class="text-finance-gold font-mono" id="val-housePrice">10,000 萬韓元</span>
+                                </div>
+                                <input type="range" id="sim-housePrice" min="5000" max="20000" step="1000" value="10000" oninput="runJeonseSim()" class="w-full accent-finance-gold">
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs font-medium mb-1">
+                                    <span class="text-slate-300">全租房押金比例 (占房價 %)：</span>
+                                    <span class="text-finance-gold font-mono" id="val-jeonseRatio">70%</span>
+                                </div>
+                                <input type="range" id="sim-jeonseRatio" min="50" max="90" step="5" value="70" oninput="runJeonseSim()" class="w-full accent-finance-gold">
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs font-medium mb-1">
+                                    <span class="text-slate-300">市場利率水準 (影響租客全租貸款意願)：</span>
+                                    <span class="text-finance-gold font-mono" id="val-interestRate">2.5% (低息)</span>
+                                </div>
+                                <input type="range" id="sim-interestRate" min="1.0" max="8.0" step="0.5" value="2.5" oninput="runJeonseSim()" class="w-full accent-finance-gold">
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs font-medium mb-1">
+                                    <span class="text-slate-300">第二年房價變動 (%)：</span>
+                                    <span class="text-finance-gold font-mono" id="val-priceChange">+10% (上漲)</span>
+                                </div>
+                                <input type="range" id="sim-priceChange" min="-30" max="30" step="5" value="10" oninput="runJeonseSim()" class="w-full accent-finance-gold">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 模擬結果輸出 -->
+                    <div class="mt-8 bg-slate-900/80 rounded-xl p-4 border border-slate-700 space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-slate-400">房東套現可用於「滾下一套」的資金 :</span>
+                            <span class="text-sm font-mono font-bold text-white" id="res-cashBack">7,000 萬韓元</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-slate-400">第二年合約到期需退還給租客的押金 :</span>
+                            <span class="text-sm font-mono font-bold text-white" id="res-depositRefund">7,000 萬韓元</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-slate-400">第二年房地產售出變現價值 :</span>
+                            <span class="text-sm font-mono font-bold text-white" id="res-soldValue">11,000 萬韓元</span>
+                        </div>
+                        <div class="pt-2 border-t border-slate-700/60 flex justify-between items-center">
+                            <span class="text-xs text-slate-400">房東信用安全狀態 :</span>
+                            <span class="px-2.5 py-0.5 rounded text-xs font-black tracking-wider" id="res-riskStatus">極度安全 🛡️</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 模擬器 2: 利差交易 (Carry Trade) 套利及閃崩模擬器 -->
+                <div class="bg-slate-800/50 rounded-2xl border border-slate-700 p-6 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                                <span class="p-1 bg-emerald-500/10 text-emerald-400 rounded">📈</span> 日圓利差交易 (Carry Trade) 套利模擬器
+                            </h3>
+                            <span class="text-xs font-mono bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/20">外匯與跨國套利</span>
+                        </div>
+                        <p class="text-slate-400 text-xs leading-relaxed mb-6">
+                            「借入極低利率的日圓，換成高利率的澳幣、美元買高收益債券，穩賺不賠？」當日圓歷史性加息，或者避險浪潮席捲、利差交易資金瘋狂清頭寸時，市場會發生多麼震撼的黑天鵝事件？
+                        </p>
+
+                        <!-- 控制面板 -->
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between text-xs font-medium mb-1">
+                                    <span class="text-slate-300">借入日圓利率 (日圓央行定價)：</span>
+                                    <span class="text-finance-gold font-mono" id="val-jpyRate">0.1%</span>
+                                </div>
+                                <input type="range" id="sim-jpyRate" min="-0.1" max="2.0" step="0.1" value="0.1" oninput="runCarrySim()" class="w-full accent-finance-gold">
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs font-medium mb-1">
+                                    <span class="text-slate-300">投資目標貨幣利率 (如澳幣/美債)：</span>
+                                    <span class="text-finance-gold font-mono" id="val-usdRate">5.0%</span>
+                                </div>
+                                <input type="range" id="sim-usdRate" min="2.0" max="8.0" step="0.25" value="5.0" oninput="runCarrySim()" class="w-full accent-finance-gold">
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs font-medium mb-1">
+                                    <span class="text-slate-300">融資槓桿倍數 (Leverage)：</span>
+                                    <span class="text-finance-gold font-mono" id="val-leverage">10 倍</span>
+                                </div>
+                                <input type="range" id="sim-leverage" min="1" max="20" step="1" value="10" oninput="runCarrySim()" class="w-full accent-finance-gold">
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs font-medium mb-1">
+                                    <span class="text-slate-300">日圓對投資貨幣匯率波動 :</span>
+                                    <span class="text-finance-gold font-mono" id="val-fxMove">無變動 (穩定)</span>
+                                </div>
+                                <input type="range" id="sim-fxMove" min="-15" max="15" step="1" value="0" oninput="runCarrySim()" class="w-full accent-finance-gold">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 模擬結果輸出 -->
+                    <div class="mt-8 bg-slate-900/80 rounded-xl p-4 border border-slate-700 space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-slate-400">理論無槓桿純利差 (Spread) :</span>
+                            <span class="text-sm font-mono font-bold text-white" id="res-spread">4.90%</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-slate-400">槓桿放大後年度利差收益 (未計匯率) :</span>
+                            <span class="text-sm font-mono font-bold text-white" id="res-leveragedReturn">49.00%</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-slate-400">考慮匯率變動後最終總回報率 :</span>
+                            <span class="text-sm font-mono font-bold text-white" id="res-finalReturn">49.00%</span>
+                        </div>
+                        <div class="pt-2 border-t border-slate-700/60 flex justify-between items-center">
+                            <span class="text-xs text-slate-400">利差平倉避險壓力 :</span>
+                            <span class="px-2.5 py-0.5 rounded text-xs font-black tracking-wider" id="res-jpyAlert">風平浪靜 🌊</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ==================== PAGE: RESOURCES ==================== -->
+        <section id="page-resources" class="hidden fade-in space-y-6">
+            <div class="border-b border-slate-800 pb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                        📚 專題知識資源庫
+                    </h2>
+                    <p class="text-slate-400 text-sm mt-1">
+                        系統化整理的財金專題，均嚴格對照文檔精華筆記。
+                    </p>
+                </div>
+                <!-- 資源分類標籤 -->
+                <div class="flex gap-2 overflow-x-auto pb-1" id="resourceFilters">
+                    <button onclick="filterResources('all')" class="r-filter-btn px-3 py-1.5 text-xs font-semibold bg-finance-accent text-white rounded-lg whitespace-nowrap">全部主題</button>
+                    <button onclick="filterResources('crisis')" class="r-filter-btn px-3 py-1.5 text-xs font-semibold text-slate-400 bg-slate-800 hover:text-white rounded-lg whitespace-nowrap">金融危機與崩盤</button>
+                    <button onclick="filterResources('national')" class="r-filter-btn px-3 py-1.5 text-xs font-semibold text-slate-400 bg-slate-800 hover:text-white rounded-lg whitespace-nowrap">國家經濟與主權</button>
+                    <button onclick="filterResources('tools')" class="r-filter-btn px-3 py-1.5 text-xs font-semibold text-slate-400 bg-slate-800 hover:text-white rounded-lg whitespace-nowrap">金融產品與套利</button>
+                </div>
+            </div>
+
+            <!-- 專題列表 -->
+            <div class="space-y-6" id="resourcesContainer">
+                <!-- 動態注入 -->
+            </div>
+        </section>
+
+        <!-- ==================== PAGE: FAQ & QUIZ ==================== -->
+        <section id="page-faq" class="hidden fade-in space-y-12">
+            <!-- 常見問答 (FAQ) -->
+            <div class="space-y-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                        💬 財金學長姐硬核問答
+                    </h2>
+                    <p class="text-slate-400 text-sm mt-1">
+                        精選自文檔深層邏輯的常見困惑，為你撥雲見日。
+                    </p>
+                </div>
+
+                <!-- Accordion Container -->
+                <div class="space-y-4" id="faqContainer">
+                    <!-- 動態注入 -->
+                </div>
+            </div>
+
+            <!-- 互動隨堂測驗 -->
+            <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl border border-slate-700 p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+                <div class="absolute -right-24 -top-24 w-64 h-64 bg-yellow-500/5 rounded-full blur-3xl"></div>
+                
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between mb-6">
+                        <span class="text-xs font-bold text-finance-gold bg-amber-500/10 border border-amber-500/20 px-3 py-1 rounded-full">🎓 實戰檢驗區</span>
+                        <span class="text-xs text-slate-400 font-mono" id="quizProgress">第 1 / 5 題</span>
+                    </div>
+
+                    <div id="quiz-screen-start" class="space-y-4">
+                        <h3 class="text-2xl font-black text-white">小Lin財金知識大比拼</h3>
+                        <p class="text-slate-300 text-sm leading-relaxed max-w-2xl">
+                            測試你對本站金融名詞與案例分析的理解程度。題目全部來源於文檔內容，答對 4 題以上，才能算是在財金圈「天靈蓋閃金光」喔！你準備好接受挑戰了嗎？
+                        </p>
+                        <button onclick="startQuiz()" class="px-6 py-2.5 bg-gradient-to-r from-finance-gold to-amber-500 text-slate-950 font-black rounded-xl hover:scale-[1.02] transition-transform">
+                            立即開啟挑戰 !
+                        </button>
+                    </div>
+
+                    <div id="quiz-screen-question" class="hidden space-y-6">
+                        <h3 class="text-xl font-bold text-white" id="quizQuestionText">
+                            <!-- 題目內容 -->
+                        </h3>
+
+                        <div class="grid grid-cols-1 gap-3" id="quizOptionsContainer">
+                            <!-- 選項 -->
+                        </div>
+
+                        <div class="flex justify-between items-center mt-6">
+                            <span class="text-xs text-slate-400 italic" id="quizFeedback"></span>
+                            <button id="quizNextBtn" onclick="nextQuizQuestion()" class="hidden px-5 py-2 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-xl text-sm transition-colors">
+                                下一題 &rarr;
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="quiz-screen-result" class="hidden text-center py-6 space-y-6">
+                        <div class="inline-flex p-4 bg-amber-500/10 text-finance-gold rounded-full text-4xl mb-2" id="quizResultEmoji">
+                            🏆
+                        </div>
+                        <h3 class="text-2xl font-black text-white" id="quizResultTitle">恭喜你完成挑戰！</h3>
+                        <p class="text-slate-300 text-sm max-w-md mx-auto" id="quizResultDesc">
+                            <!-- 結果描述 -->
+                        </p>
+                        <div class="text-3xl font-black text-finance-gold font-mono" id="quizScoreText">
+                            得分 : 5 / 5
+                        </div>
+                        <button onclick="resetQuiz()" class="px-6 py-2.5 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-xl text-sm transition-all">
+                            重新測驗
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 底部資訊欄 -->
+    <footer class="bg-finance-900 border-t border-slate-800 py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+            <div>
+                <p class="text-sm text-slate-400">
+                    &copy; 2026 財金學習生態網 (Finance Students Hub). All Rights Reserved.
+                </p>
+                <p class="text-xs text-slate-500 mt-1">
+                    聲明：本網站所提供之內容僅作為教學學術探討，均不構成任何實際投資策略建議。投資有風險，入市需謹慎！
+                </p>
+            </div>
+            <div class="flex space-x-4">
+                <span class="text-xs text-slate-500 bg-slate-800/60 px-2.5 py-1 rounded border border-slate-700/60">
+                    技術支持：HTML5 + Tailwind CSS + Vanilla JS
+                </span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript 交互邏輯 -->
+    <script>
+        // ==================== 1. 全局狀態與數據庫 ====================
+        
+        // 核心名詞解釋數據庫 (基於文檔硬核整理)
+        const glossaryData = [
+            {
+                id: 'jeonse',
+                title: '全租房 (Jeonse)',
+                category: 'system',
+                categoryLabel: '金融體制 & 政策',
+                badgeColor: 'emerald',
+                layman: '租房不需要付月租！而是給房東一筆巨額押金（通常是房價的 60%-80%），租約結束時房東全額退還。',
+                hardcore: '實質上是租客將這筆押金的「無風險利息」權益讓渡給房東，房東則獲得無息高槓桿資金進行再投資（通常是炒地產）。在低利率、房價持續上漲的「信用擴張期」時運轉順暢；但當利率急速攀升（租客貸款成本翻倍不願全租）或房價下跌（房東無法賣房或找到新租客來回籠資金退押金）時，就會引發系統性違約與房地產崩盤危機。',
+                reference: '《韓國房地產危機 | 全租房》'
+            },
+            {
+                id: 'debt-swap',
+                title: '12萬億隱性化債',
+                category: 'system',
+                categoryLabel: '金融體制 & 政策',
+                badgeColor: 'amber',
+                layman: '地方政府借了超高利息的「高利貸」（高達10%+），中央看不下去了，發行利率極低（約2%）的「專項政府債券」幫你把高利貸還掉。',
+                hardcore: '分稅制改革後，中央政府拿走大頭稅收，地方政府承擔大量事權。地方為推動城建，設立「城投平台（地方政府融資平台 LGFV）」以第三方名義發行大量「隱性債務」（高息非標融資、城投債等）。2024年底推出的12萬億化債，本質是將這些利息高於10%的隱性債置換為利息2%左右的官方顯性地方政府「專項債券」，3年內為地方節約6000億利息利潤，拉長還款期限、降低信用破裂風險。',
+                reference: '《一口氣了解12萬億化債和中國的財政體系》'
+            },
+            {
+                id: 'carry-trade',
+                title: '利差交易 (Carry Trade)',
+                category: 'derivatives',
+                categoryLabel: '外匯 & 衍生工具',
+                badgeColor: 'emerald',
+                layman: '跟利率極低的國家（如日本）借錢，換成利率高（如澳幣、美債）的資產去收利息，空手套白狼。',
+                hardcore: '當投資人借入低息貨幣（日圓）並將其兌換為高息貨幣以投資外國高收益資產時，只要兩國利差存在且匯率波動不劇烈，即可實現穩定的息差。然而，一旦借入國利率上升（如日圓歷史性加息）或爆發大災難觸發避險模式，投資人為了平倉，會集體「賣出高息資產，買回日圓」以還清貸款，進而引發日圓匯率劇烈暴漲、外國資產暴跌的踩踏效應。',
+                reference: '《匯率為什麼漲跌 | 美元跌宕50年》'
+            },
+            {
+                id: 'cat-bond',
+                title: '巨災債券 (Catastrophe Bond)',
+                category: 'derivatives',
+                categoryLabel: '衍生工具 & 產品',
+                badgeColor: 'rose',
+                layman: '投資人跟大自然對賭！如果這幾年沒發生重大天災，你拿超高利息；但只要颱風地震一來，你的本金就被國家拿去賑災。',
+                hardcore: '巨災債券是保險公司或政府為分散極端自然災害風險而發行的結構化證券。如果在約定期限內未發生特定級別、特定地理位置的天災（如2022年美國颶風 Ian），投資人可獲得高於無風險利率約10%以上的超額收益；一旦触发巨灾閾值，債券本金將全額或按比例賠付給發行人（再保險公司或政府）。2023年收益率暴增至20%，主因是2022年颶風重創後投資人極度恐慌，發行人被迫提供極高風險補償。',
+                reference: '《最賺錢的投資品，你聽說過麼?》'
+            },
+            {
+                id: 'snowball',
+                title: '雪球結構化產品 (Snowball)',
+                category: 'derivatives',
+                categoryLabel: '衍生工具 & 產品',
+                badgeColor: 'rose',
+                layman: '只要股市大盤不暴跌，券商承諾每年給你高額固定利息。但是一旦跌穿底線（敲入），你就必須吞下指數的所有跌幅。',
+                hardcore: '雪球產品屬於結構化金融衍生品，本質是投資人向券商「賣出一個帶有觸發條款的看跌期權（Put Option）」來換取高額票息。產品設有兩個邊界：敲出價（通常為100%或103%）與敲入價（通常為70%或75%）。當標的指數在區間波動，投資人獲得年化15-20%的票息；但若市場爆跌擊穿敲入線且未敲出，投資人將面臨與指數同比例的虧損，雪球敲入爆倉甚至會引發券商在股指期貨市場的平倉反噬，加速市場下跌。',
+                reference: '《【硬核】神秘的金融產品 如何導致富豪們接連爆倉》'
+            },
+            {
+                id: 'vie',
+                title: 'VIE 架構 (協議控制)',
+                category: 'corp',
+                categoryLabel: '資本 & 企業架構',
+                badgeColor: 'blue',
+                layman: '國內不允許外資控股網路公司（如B站），為了繞過監管去美國上市，在開曼註冊個空殼公司，用一系列合約把國內公司的利潤控制過來。',
+                hardcore: 'Variable Interest Entity (可變利益實體)。因限制性產業不允許外資直接持股，企業在開曼群島設立境外上市主體，隨後在國內成立一家「外商獨資企業(WFOE)」。WFOE 不直接控股境內經營主體（VIE），而是通過簽署一系列獨家諮詢服務協議、股權質押協議等，使境外上市主體能夠實質性控制境內 VIE 的所有利潤和投票權。這種將「股權關係」轉變為「合同協議關係」的避稅兼監管套利手段是中概股赴美、赴港上市的標準架構。',
+                reference: '《一口氣搞清避稅天堂的資本遊戲》'
+            },
+            {
+                id: 'vam',
+                title: '對賭協議 (VAM)',
+                category: 'corp',
+                categoryLabel: '資本 & 企業架構',
+                badgeColor: 'blue',
+                layman: '投資方和創始人打個賭：若公司在3年內上市或達到利潤目標，投資方賞你股權；若輸了，創始人得自掏腰包把利息連本帶利賠給投資方。',
+                hardcore: '對賭協議（Valuation Adjustment Mechanism）即估值調整機制。是在私募股權投資（PE/VC）中，為了規避企業未來經營業績和上市前景的不確定性而設計的合約。雙方通常以「淨利潤」、「營收」或「IPO上市時間」為考核指標。達標時（如蒙牛在2004年成功赴港上市、營業額翻倍），創始團隊可獲得巨額股權獎勵；若未達標，創始團隊通常需以現金補償、或大比例無償割讓股權，甚至觸發創始人無限連帶回購責任導致傾家產。',
+                reference: '《對賭，在資本市場是怎么玩的？》'
+            },
+            {
+                id: 'risk-free-rate',
+                title: '無風險利率 (Risk-Free Rate)',
+                category: 'system',
+                categoryLabel: '金融體制 & 政策',
+                badgeColor: 'amber',
+                layman: '這個世界上最安全的借錢利率。因為借給大國政府基本上絕對不會還不上錢，所以這就是一切利息的根基。',
+                hardcore: '無風險利率是指理論上完全沒有違約風險（Default Risk）的資產收益率。在現實金融體系中，通常將主要成熟經濟體（如美國、中國、德國）發行的「主權國家國債利率（Treasury Yield）」近似視為對應貨幣的無風險利率。金融市場中所有的定價模型、房貸、信用卡利息以及企業債券利率，都是在此利率（無風險利率 + 違約溢價）的基礎上疊加定價，因此國債利率曲線（Yield Curve）是整個經濟體信用的根本基石。',
+                reference: '《關於利率，你需要知道的那些事兒》'
+            }
+        ];
+
+        // 專題資源分類數據庫 (基於文檔整理)
+        const resourcesData = [
+            {
+                title: '歐債危機專題：當希臘與高盛聯手欺瞞歐洲',
+                category: 'crisis',
+                badgeText: '金融崩盤',
+                badgeColor: 'rose',
+                desc: '希臘為了跨過欧元區「國債與GDP比值不超過60%」的馬斯特里赫特協定紅線，向華爾街高盛購買了「貨幣利率互換協議」，成功將 28 億歐元的債務隱藏在表外，最終這筆隱蔽債務滾雪球般引爆了震驚全球的歐債危機。本專題剖析北方核心國與南方債務國的資本失衡。',
+                learnings: [
+                    '馬克龍式低息貸款：小國與大德法享有同樣歐元低息帶來的融資狂歡與高估值泡沫。',
+                    '表外債務：希臘利用貨幣互換隱藏上百億債務。',
+                    '核心債權：德、法銀行成為南方外圍債務國的實質最大債權人。'
+                ]
+            },
+            {
+                title: '主權基金專題：全球三大主權基金與新加坡財富密碼',
+                category: 'national',
+                badgeText: '國家經濟',
+                badgeColor: 'emerald',
+                desc: '與依靠賣石油的挪威、沙特等中東「老天爺賞飯吃」的主權基金不同，新加坡的財富純粹靠自己拼出來。貿易順差積累了巨額外匯儲備，香港將其全部留在央行做匯率防守，而新加坡則大膽將部分外匯拆分出兩大主權基金：GIC（穩健的中場主力，主打不求有功、但求無過的多樣化資產配置）與淡馬錫（主動型、超高Alpha的直投獵手）。',
+                learnings: [
+                    '防守型資金：MAS（新加坡金管局）主要用於穩定新幣匯率，在2022年加息潮中消耗1/3儲備。',
+                    'GIC：全球穩健投資主力，主打分散避險，不主動追求超額Alpha。',
+                    '淡馬錫 (Temasek)：重倉直投全球創新科技、高回報企業，追求極高長期股權回報率。'
+                ]
+            },
+            {
+                title: '主權與地緣經濟：以色利「中東矽谷」與 Yozma 創業融資計畫',
+                category: 'national',
+                badgeText: '國家經濟',
+                badgeColor: 'emerald',
+                desc: '以色列國土狹小、地緣衝突頻繁、在沙漠嚴重缺水的情況下，打造了人均創業公司第一的創新奇蹟。其起飛的核心是 1991 年政府推出的「Yozma 創業投資項目」。政府意識到不能單純塞錢給創業者，而是應利用海外創投（VC）的篩選眼光與後續資金注入，政府出資跟投並提供超額股權回購激勵，進而帶動了整個中東科技創新生態圈。',
+                learnings: [
+                    'Yozma 模式：公私合作（PPP）創投典範，利用外國大VC資金與篩選眼光，打通初創ABCDEFG輪融資。',
+                    '經商與Risk Taker文化：猶太人文化中重商、敢於冒險且極度抱團的底層人本推動力。',
+                    '納斯達克奇蹟：以色列在纳指上市公司數量曾僅次於美、中。'
+                ]
+            },
+            {
+                title: '結構化商品專題：雪球、巨災與期貨市場的驚天大博弈',
+                category: 'tools',
+                badgeText: '結構金融',
+                badgeColor: 'amber',
+                desc: '金融市場最驚心動魄的博弈往往來自結構化衍生工具。從 1995 年引發大陸監管大地震、暫停國債期貨18年的「327事件」；到 2021 年家族基金 Archegos (黃比爾) 爆虧 200 億、導致瑞信等大行徹底躺槍的高槓桿差價合約；再到大宗商品原油期貨在 2020 年出現罕見「負數原油結算價」拉爆散戶。帶你一次性看清金融產品與槓桿博弈。',
+                learnings: [
+                    '327國債期貨事件：萬國證券與中經開圍繞貼補率進行8分鐘驚天對賭，重塑監管格局。',
+                    '瑞信崩盤導火索：Greensill與Archegos(黃比爾)爆倉兩大雷，直接耗乾瑞信財富管理信用根基。',
+                    '期貨實物交割： CME活牛期貨與原油期貨在缺乏流動性時的逼倉陷阱。'
+                ]
+            }
+        ];
+
+        // 硬核 FAQ 數據庫
+        const faqData = [
+            {
+                question: '為什麼日圓會在日本發生重大災害（如2011大地震）時不降反升？',
+                answer: '這在金融學中是一個非常反直覺的現象。背後的核心邏輯是「利差交易（Carry Trade）資金的集體平倉回流」。在日本地震前，全球無數投資者借入超低利率的日圓（做空日圓），然後換成高收益貨幣（如澳幣、美債）去海外套利。大地震爆發後，市場極度恐慌，海外利差交易者為了避險、減少頭寸，集體在短時間內將海外投資「套現成澳元/美元，然後在匯市買入日圓以償還日本銀行的債務」。每個人都急著買入日圓平倉，導致日圓供不應求、在震後不降反暴漲，這也奠定了日圓「避險貨幣」的獨特金融屬性。'
+            },
+            {
+                question: '什麼是地方政府的「隱性債務」？它是怎麼形成的？',
+                answer: '隱性債務是指地方政府「在官方預算之外、以非官方名義發行、實質需要財政資金償還的債務」。1994年分稅制改革後，中央財政集中了高達50%-60%的稅收，但地方政府卻承擔了民生、教育、城建等絕大多數「事權」。地方政府極其缺錢卻無法直接發債，於是便創設了「城投平台（地方政府融資平台）」，以第三方國企名義去向銀行貸款、發行高息城投債與非標準化理財。這些債務表面上算作國企債務，但實質背書是地方政府的信用與土地出讓收入，形成了萬億規模的隱性債。'
+            },
+            {
+                question: '2023年巨災債券（Cat Bond）收益率達到驚人的 20%，是不是金融公司騙人的把戲？',
+                answer: '這絕非騙局，而是「風險溢價與大自然博弈的精準反彈」。在2022年9月，超強颶風 Ian 登陸美國佛羅里達州，造成千億美元的恐怖損失，直接觸發了多隻巨災債券的賠償機制，導致許多投資人本金賠光、被嚇退。為了在2023年重新募集資金，保險公司和政府被迫把「無風險利率之上的超額回報拉到10%-15%」來吸引投資人。神奇的是，2023年全球氣候異常平靜、未發生任何達標的約定大天災，投資人因此無損收回全部本金，並穩拿極高票息，最終實現了高達20%的回報率。'
+            },
+            {
+                question: '同樣是避稅天堂，開曼群島（Cayman）和英屬維京群島（BVI）的資本玩法有何不同？',
+                answer: '在跨國中概股的經典股權結構中，這兩個群島扮演的角色分工明確。英屬維京群島（BVI）的最大優點是「極度保密與免稅」，不要求公開股東與實際控制人是誰，所以通常用作「創始人個人持股、或私下重組的隱身殼」。而開曼群島（Cayman）雖然也是避稅港，但它的「證券法、信託法更為完善成熟，被美國紐交所、香港聯交所等各大交易所高度認可」。因此，資本的標準操作是：創始人設立BVI公司，BVI公司再去控股設立開曼公司，由「開曼公司」作為上市主體赴港、赴美掛牌招股。'
+            }
+        ];
+
+        // 隨堂測驗題目數據庫 (5題，答案均源自文檔)
+        const quizQuestions = [
+            {
+                q: "韓國特有的『全租房』模式中，其底層金融本質是甚麼？",
+                options: [
+                    "租客向銀行借高利貸，直接把房子買下，兩年後再賣給房東",
+                    "租客通過免除租金，將『一筆巨大押金的無風險利息』轉讓給房東，房東藉此獲得無息高槓桿資金炒房",
+                    "房東將房地產全部股權贈送給租客，兩年後再以原價贖回",
+                    "一種純粹的慈善保障政策，政府強制房東不許收租金"
+                ],
+                correct: 1,
+                explanation: "全租房本質是租客把大筆資金的利息權讓渡，房東免去月租，房東拿到極高槓桿資金（房價60-80%）進行再投資。當加息和房價下跌時會引發連鎖爆倉危機。"
+            },
+            {
+                q: "關於地方政府『隱性債務』置換的12萬億化債方案，下列說法何者正確？",
+                options: [
+                    "中央印製12萬億元現金直接發放給民眾刺激消費",
+                    "將利息通常高於 10% 的高息隱性債，置換為利息約 2% 的顯性官方『地方政府專項債券』，3年省去約6000億利息",
+                    "強制所有銀行免除地方政府欠下的全部本金，不准索回",
+                    "宣布所有城投平台全部原地解散並破產，債務一筆勾銷"
+                ],
+                correct: 1,
+                explanation: "化債是以低息（約2%左右）的政府專項債券去替換原本利息極高、期限極短的地方隱性高息非標融資、城投債，3年可以省下約6000億利息利潤。"
+            },
+            {
+                q: "在日圓『利差交易 (Carry Trade)』中，當全球發生重大危機或日圓加息時，會發生什麼現象？",
+                options: [
+                    "投資者瘋狂拋售日圓，導致日圓急速貶值",
+                    "利差交易資金大舉湧入股市，推高美股暴漲",
+                    "投資人集體『套現海外資產，買回日圓平倉還債』，導致日圓短期內出現歷史性劇烈暴漲",
+                    "世界各國央行集體取消日圓的儲備貨幣資格"
+                ],
+                correct: 2,
+                explanation: "由於利差交易是借日圓買外幣資產，一旦危機來臨，投資者要清空頭寸避險，就必須賣掉外國資產換成日圓還貸。集體買日圓會引發日圓匯率大暴漲。"
+            },
+            {
+                q: "跨國公司（如蘋果公司、B站）在資本操作中使用的『VIE 架構』指的是什麼？",
+                options: [
+                    "一種新型的 AI 防作弊檢測系統，由多鄰國英語測試首創",
+                    "協議控制。境外上市主體不持股境內公司，而是通過一家獨資企業（WFOE）與境內經營主體簽署一系列協議以控制其經營利潤，繞過外資准入監管",
+                    "與大自然進行氣候對賭的巨災保護結構",
+                    "當公司利潤市淨率低於1時，被強制在A股退市的政策"
+                ],
+                correct: 1,
+                explanation: "VIE（Variable Interest Entity）架構，即可變利益實體。在文檔《避稅天堂的資本遊戲》中詳述，通過WFOE與國內主體簽定一堆協議把利潤和控制權串聯到境外上市空殼，從而繞過外資監管赴海外上市。"
+            },
+            {
+                q: "2023年巨災債券（Cat Bond）暴賺 20% 的關鍵歷史成因是什麼？",
+                options: [
+                    "2023年全球多地爆發十幾次歷史最大海嘯與大火災，引發保險賠款飆升",
+                    "2022年颶風 Ian 爆發導致巨額賠付、投資人恐慌，使得2023年債券定價溢價極高，而2023年卻無特大灾難發生",
+                    "美聯儲加息把美國國債的無風險利率直接提升到了年化 20%",
+                    "比爾蓋茨親自注資成立該主權基金，並進行股權回購回報投資人"
+                ],
+                correct: 1,
+                explanation: "2022年颶風重創保險業，觸發大賠付，投資人被嚇跑；發行人被迫給2023年債券設定極高風險補償；最終2023年無大災難，高溢價全進了投資人口袋。"
+            }
+        ];
+
+
+        // ==================== 2. 功能邏輯實現 ====================
+
+        // 分頁切換系統
+        function switchTab(tabId) {
+            // 隱藏所有分頁
+            document.querySelectorAll('main > section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            // 顯示指定分頁
+            const activeSection = document.getElementById(`page-${tabId}`);
+            if (activeSection) {
+                activeSection.classList.remove('hidden');
+            }
+
+            // 更新按鈕樣式
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn px-4 py-2 text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all duration-200 whitespace-nowrap";
+            });
+            const activeBtn = document.getElementById(`tab-${tabId}`);
+            if (activeBtn) {
+                activeBtn.className = "tab-btn px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200 whitespace-nowrap bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/15";
+            }
+
+            // 關閉移動端菜單
+            document.getElementById('mobileMenu').classList.add('hidden');
+        }
+
+        // 行動端漢堡包選單開關
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        // 渲染核心名詞解釋
+        function renderGlossary(filter = 'all', keyword = '') {
+            const grid = document.getElementById('glossaryGrid');
+            grid.innerHTML = '';
+
+            const filtered = glossaryData.filter(item => {
+                const matchesCategory = (filter === 'all' || item.category === filter);
+                const matchesSearch = (keyword === '' || 
+                    item.title.toLowerCase().includes(keyword.toLowerCase()) || 
+                    item.layman.toLowerCase().includes(keyword.toLowerCase()) ||
+                    item.hardcore.toLowerCase().includes(keyword.toLowerCase())
+                );
+                return matchesCategory && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-12 text-slate-500 text-sm">
+                        🔍 沒有找到匹配的核心名詞，請換個詞試試吧！
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                card.id = `glossary-card-${item.id}`;
+                card.className = "bg-slate-800/60 rounded-2xl border border-slate-700 p-6 flex flex-col justify-between hover:border-slate-500 transition-all duration-300";
+                
+                // 動態根據分類產生不同的 Badge
+                let badgeClass = "text-xs font-mono font-bold bg-blue-500/10 text-blue-400 px-2 py-1 rounded";
+                if (item.category === 'system') badgeClass = "text-xs font-mono font-bold bg-amber-500/10 text-amber-400 px-2 py-1 rounded";
+                if (item.category === 'derivatives') badgeClass = "text-xs font-mono font-bold bg-rose-500/10 text-rose-400 px-2 py-1 rounded";
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between">
+                            <span class="${badgeClass}">${item.categoryLabel}</span>
+                            <span class="text-[10px] text-slate-500 font-mono">文檔直擊 📍</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mt-3 flex items-center gap-1.5">
+                            ${item.title}
+                        </h3>
+                        
+                        <!-- 小Lin大白話 -->
+                        <div class="mt-4 bg-slate-900/60 rounded-xl p-3.5 border border-slate-800">
+                            <h4 class="text-xs font-bold text-finance-gold flex items-center gap-1">📣 小Lin 大白話</h4>
+                            <p class="text-xs text-slate-300 mt-1.5 leading-relaxed">${item.layman}</p>
+                        </div>
+
+                        <!-- 硬核解析 -->
+                        <div class="mt-4">
+                            <h4 class="text-xs font-bold text-blue-400 flex items-center gap-1">🧠 財金硬核機制</h4>
+                            <p class="text-xs text-slate-400 mt-1.5 leading-relaxed font-light">${item.hardcore}</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-slate-700/50 flex justify-between items-center text-[11px] text-slate-500">
+                        <span>引自 ${item.reference}</span>
+                        <span class="text-finance-gold font-mono">★ 考點儲備</span>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // 核心名詞篩選
+        function filterGlossary(category) {
+            document.querySelectorAll('#glossaryFilters button').forEach(btn => {
+                btn.className = "g-filter-btn px-3 py-1.5 text-xs font-semibold text-slate-400 bg-slate-800 hover:text-white rounded-lg whitespace-nowrap";
+            });
+            event.target.className = "g-filter-btn px-3 py-1.5 text-xs font-semibold bg-finance-accent text-white rounded-lg whitespace-nowrap";
+            
+            const searchVal = document.getElementById('globalSearchInput').value;
+            renderGlossary(category, searchVal);
+        }
+
+        // 點擊直達名詞並高亮
+        function openGlossaryDetail(id) {
+            switchTab('glossary');
+            setTimeout(() => {
+                const element = document.getElementById(`glossary-card-${id}`);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    // 添加閃爍高亮動畫
+                    element.classList.remove('border-slate-700');
+                    element.classList.add('border-finance-gold', 'scale-[1.02]', 'shadow-2xl', 'shadow-amber-500/10');
+                    setTimeout(() => {
+                        element.classList.remove('border-finance-gold', 'scale-[1.02]', 'shadow-2xl', 'shadow-amber-500/10');
+                        element.classList.add('border-slate-500');
+                    }, 2000);
+                }
+            }, 300);
+        }
+
+        // 渲染專題資源庫
+        function renderResources(filter = 'all', keyword = '') {
+            const container = document.getElementById('resourcesContainer');
+            container.innerHTML = '';
+
+            const filtered = resourcesData.filter(item => {
+                const matchesCategory = (filter === 'all' || item.category === filter);
+                const matchesSearch = (keyword === '' || 
+                    item.title.toLowerCase().includes(keyword.toLowerCase()) || 
+                    item.desc.toLowerCase().includes(keyword.toLowerCase())
+                );
+                return matchesCategory && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12 text-slate-500 text-sm">
+                        🔍 沒有找到匹配的專題資源，請換個詞試試吧！
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "bg-slate-800/40 rounded-3xl border border-slate-800 p-6 hover:border-slate-700 transition-all duration-300 flex flex-col lg:flex-row gap-6 items-start";
+                
+                let badgeClass = "bg-blue-500/10 text-blue-400 border-blue-500/20";
+                if (item.category === 'crisis') badgeClass = "bg-rose-500/10 text-rose-400 border-rose-500/20";
+                if (item.category === 'national') badgeClass = "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
+                if (item.category === 'tools') badgeClass = "bg-amber-500/10 text-amber-400 border-amber-500/20";
+
+                let learningsHtml = '';
+                item.learnings.forEach(ln => {
+                    learningsHtml += `
+                        <li class="flex items-start gap-2">
+                            <span class="text-finance-gold text-xs mt-1">✔</span>
+                            <span class="text-slate-300 text-xs font-light">${ln}</span>
+                        </li>
+                    `;
+                });
+
+                card.innerHTML = `
+                    <div class="flex-grow space-y-3 lg:max-w-xl">
+                        <div class="flex items-center gap-2">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${badgeClass}">
+                                ${item.badgeText}
+                            </span>
+                            <span class="text-[11px] text-slate-500 font-mono">小Lin說 核心視角</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-white">${item.title}</h3>
+                        <p class="text-slate-400 text-xs leading-relaxed font-light">${item.desc}</p>
+                    </div>
+
+                    <!-- 核心關鍵要點導航面板 -->
+                    <div class="w-full lg:w-80 bg-slate-900/60 rounded-2xl border border-slate-800 p-4 shrink-0">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase font-mono tracking-wider">🎓 專題考試關鍵考點</span>
+                        <ul class="mt-3 space-y-2.5">
+                            ${learningsHtml}
+                        </ul>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // 資源庫主題分類篩選
+        function filterResources(category) {
+            document.querySelectorAll('#resourceFilters button').forEach(btn => {
+                btn.className = "r-filter-btn px-3 py-1.5 text-xs font-semibold text-slate-400 bg-slate-800 hover:text-white rounded-lg whitespace-nowrap";
+            });
+            event.target.className = "r-filter-btn px-3 py-1.5 text-xs font-semibold bg-finance-accent text-white rounded-lg whitespace-nowrap";
+            
+            const searchVal = document.getElementById('globalSearchInput').value;
+            renderResources(category, searchVal);
+        }
+
+        // 搜尋處理器 (同時過濾 Glossary 和 Resources)
+        function handleGlobalSearch(isMobile = false) {
+            const inputId = isMobile ? 'mobileSearchInput' : 'globalSearchInput';
+            const keyword = document.getElementById(inputId).value;
+            
+            // 同步兩個搜尋框的值
+            if (isMobile) {
+                document.getElementById('globalSearchInput').value = keyword;
+            } else {
+                document.getElementById('mobileSearchInput').value = keyword;
+            }
+
+            // 實時更新渲染
+            renderGlossary('all', keyword);
+            renderResources('all', keyword);
+        }
+
+        // 渲染常見問答 (FAQ Accordion)
+        function renderFAQ() {
+            const container = document.getElementById('faqContainer');
+            container.innerHTML = '';
+
+            faqData.forEach((item, index) => {
+                const wrapper = document.createElement('div');
+                wrapper.className = "bg-slate-800/40 rounded-2xl border border-slate-800 overflow-hidden";
+                
+                wrapper.innerHTML = `
+                    <button onclick="toggleFaq(${index})" class="w-full text-left px-6 py-4 flex justify-between items-center focus:outline-none hover:bg-slate-800/30 transition-colors">
+                        <span class="font-bold text-sm sm:text-base text-slate-200">Q${index+1}: ${item.question}</span>
+                        <svg id="faq-icon-${index}" class="h-5 w-5 text-slate-500 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div id="faq-ans-${index}" class="hidden px-6 pb-5 border-t border-slate-800/60 pt-4 bg-slate-900/40">
+                        <p class="text-xs sm:text-sm text-slate-400 leading-relaxed font-light">${item.answer}</p>
+                    </div>
+                `;
+                container.appendChild(wrapper);
+            });
+        }
+
+        // 折疊展開 FAQ 邏輯
+        function toggleFaq(index) {
+            const ans = document.getElementById(`faq-ans-${index}`);
+            const icon = document.getElementById(`faq-icon-${index}`);
+            
+            ans.classList.toggle('hidden');
+            if (ans.classList.contains('hidden')) {
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                icon.style.transform = 'rotate(180deg)';
+            }
+        }
+
+
+        // ==================== 3. 互動模擬器邏輯 ====================
+
+        // 模擬器 1: 韓國全租房泡沫
+        function runJeonseSim() {
+            const housePrice = parseFloat(document.getElementById('sim-housePrice').value);
+            const ratio = parseFloat(document.getElementById('sim-jeonseRatio').value) / 100;
+            const rate = parseFloat(document.getElementById('sim-interestRate').value);
+            const priceChange = parseFloat(document.getElementById('sim-priceChange').value) / 100;
+
+            // 計算押金 (房東套現可用於滾下一套的錢)
+            const deposit = housePrice * ratio;
+            // 第二年到期退還押金 (不變)
+            const refund = deposit;
+            // 第二年售出變現價值 (房產升值貶值後)
+            const soldVal = housePrice * (1 + priceChange);
+
+            // 更新 UI
+            document.getElementById('val-housePrice').innerText = `${housePrice.toLocaleString()} 萬韓元`;
+            document.getElementById('val-jeonseRatio').innerText = `${(ratio*100).toFixed(0)}%`;
+            document.getElementById('val-interestRate').innerText = `${rate.toFixed(1)}% (${rate > 4.5 ? '高息危機' : '低息融資'})`;
+            document.getElementById('val-priceChange').innerText = `${priceChange >= 0 ? '+' : ''}${(priceChange*100).toFixed(0)}% (${priceChange >= 0 ? '上漲' : '下跌'})`;
+
+            document.getElementById('res-cashBack').innerText = `${deposit.toLocaleString()} 萬韓元`;
+            document.getElementById('res-depositRefund').innerText = `${refund.toLocaleString()} 萬韓元`;
+            document.getElementById('res-soldValue').innerText = `${soldVal.toLocaleString()} 萬韓元`;
+
+            // 評估風險狀態
+            const riskEl = document.getElementById('res-riskStatus');
+            
+            // 爆倉判斷：如果房價大跌，或者加息到臨界點，且房東沒錢退押金
+            if (priceChange < 0 && rate > 4.5) {
+                riskEl.innerText = "爆倉! 💀 (龐氏融資鏈條斷裂，金先生跑路)";
+                riskEl.className = "px-2.5 py-0.5 rounded text-xs font-black bg-red-500/10 text-red-400 border border-red-500/20";
+            } else if (priceChange < 0 || rate > 4.5) {
+                riskEl.innerText = "信用警戒 ⚠️ (流動性緊張，需賤賣資產)";
+                riskEl.className = "px-2.5 py-0.5 rounded text-xs font-black bg-amber-500/10 text-amber-400 border border-amber-500/20";
+            } else {
+                riskEl.innerText = "極度安全 🛡️ (信用擴張，地產泡沫持續膨脹)";
+                riskEl.className = "px-2.5 py-0.5 rounded text-xs font-black bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
+            }
+        }
+
+        // 模擬器 2: 利差交易 (Carry Trade) 
+        function runCarrySim() {
+            const jpyRate = parseFloat(document.getElementById('sim-jpyRate').value);
+            const usdRate = parseFloat(document.getElementById('sim-usdRate').value);
+            const leverage = parseInt(document.getElementById('sim-leverage').value);
+            const fxMove = parseFloat(document.getElementById('sim-fxMove').value) / 100; // 日圓匯率相對於高息貨幣波動
+
+            // 計算息差 Spread
+            const spread = usdRate - jpyRate;
+            // 槓桿放大後的利差收益
+            const leveragedRet = spread * leverage;
+            // 考慮匯率影響後的總收益。日圓升值（fxMove > 0）表示還款日圓變貴，大幅吞噬套利利潤甚至虧損
+            const exchangeImpact = -fxMove * leverage * 100; // 匯率變動放大槓桿
+            const finalRet = leveragedRet + exchangeImpact;
+
+            // 更新 UI
+            document.getElementById('val-jpyRate').innerText = `${jpyRate.toFixed(1)}%`;
+            document.getElementById('val-usdRate').innerText = `${usdRate.toFixed(2)}%`;
+            document.getElementById('val-leverage').innerText = `${leverage} 倍`;
+            document.getElementById('val-fxMove').innerText = fxMove > 0 ? `日圓升值 +${(fxMove*100).toFixed(0)}%` : fxMove < 0 ? `日圓貶值 ${(fxMove*100).toFixed(0)}%` : '匯率穩定';
+
+            document.getElementById('res-spread').innerText = `${spread.toFixed(2)}%`;
+            document.getElementById('res-leveragedReturn').innerText = `${leveragedRet.toFixed(2)}%`;
+            document.getElementById('res-finalReturn').innerText = `${finalRet.toFixed(2)}%`;
+
+            // 風險警告狀態
+            const riskEl = document.getElementById('res-jpyAlert');
+            if (jpyRate > 0.8 || fxMove > 0.05) {
+                riskEl.innerText = "歷史性閃崩! 🚨 (日圓加息/升值，Carry Trade 集體踩踏平倉)";
+                riskEl.className = "px-2.5 py-0.5 rounded text-xs font-black bg-red-500/10 text-red-400 border border-red-500/20";
+            } else if (jpyRate > 0.3 || fxMove > 0.01) {
+                riskEl.innerText = "避險模式開啟 ⚡ (利差收窄，外資開始有序回流)";
+                riskEl.className = "px-2.5 py-0.5 rounded text-xs font-black bg-amber-500/10 text-amber-400 border border-amber-500/20";
+            } else {
+                riskEl.innerText = "風平浪靜 🌊 (利差巨大，套利資本狂歡)";
+                riskEl.className = "px-2.5 py-0.5 rounded text-xs font-black bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
+            }
+        }
+
+
+        // ==================== 4. 互動知識測驗系統 ====================
+        let currentQuizIndex = 0;
+        let quizScore = 0;
+
+        function startQuiz() {
+            document.getElementById('quiz-screen-start').classList.add('hidden');
+            document.getElementById('quiz-screen-question').classList.remove('hidden');
+            currentQuizIndex = 0;
+            quizScore = 0;
+            loadQuizQuestion();
+        }
+
+        function loadQuizQuestion() {
+            const qData = quizQuestions[currentQuizIndex];
+            document.getElementById('quizProgress').innerText = `第 ${currentQuizIndex + 1} / ${quizQuestions.length} 題`;
+            document.getElementById('quizQuestionText').innerText = qData.q;
+            document.getElementById('quizFeedback').innerText = '';
+            document.getElementById('quizNextBtn').classList.add('hidden');
+
+            const optionsContainer = document.getElementById('quizOptionsContainer');
+            optionsContainer.innerHTML = '';
+
+            qData.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left px-5 py-3.5 bg-slate-900/60 border border-slate-700/80 rounded-xl hover:border-slate-500 text-xs sm:text-sm font-light text-slate-300 transition-all";
+                btn.onclick = () => selectQuizOption(idx);
+                btn.innerHTML = `<span class="font-bold text-finance-gold mr-2 font-mono">${String.fromCharCode(65 + idx)}.</span> ${opt}`;
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function selectQuizOption(selectedIndex) {
+            const qData = quizQuestions[currentQuizIndex];
+            const optionsContainer = document.getElementById('quizOptionsContainer');
+            const btns = optionsContainer.querySelectorAll('button');
+
+            // 禁用所有按鈕，防止重複點擊
+            btns.forEach(btn => btn.disabled = true);
+
+            const correctIndex = qData.correct;
+            const feedbackEl = document.getElementById('quizFeedback');
+
+            if (selectedIndex === correctIndex) {
+                quizScore++;
+                btns[selectedIndex].className = "w-full text-left px-5 py-3.5 bg-emerald-500/10 border-2 border-emerald-500 rounded-xl text-xs sm:text-sm font-bold text-emerald-400 transition-all";
+                feedbackEl.innerText = "🎉 答對了！天靈蓋閃金光！";
+                feedbackEl.className = "text-xs font-bold text-emerald-400 animate-bounce";
+            } else {
+                btns[selectedIndex].className = "w-full text-left px-5 py-3.5 bg-rose-500/10 border-2 border-rose-500 rounded-xl text-xs sm:text-sm font-bold text-rose-400 transition-all";
+                btns[correctIndex].className = "w-full text-left px-5 py-3.5 bg-emerald-500/10 border-2 border-emerald-500 rounded-xl text-xs sm:text-sm font-bold text-emerald-400 transition-all";
+                feedbackEl.innerText = `❌ 答錯啦！正確答案是 ${String.fromCharCode(65 + correctIndex)} 哦！`;
+                feedbackEl.className = "text-xs font-bold text-rose-400";
+            }
+
+            // 顯示詳細硬核解析
+            const explDiv = document.createElement('div');
+            explDiv.className = "mt-4 bg-slate-900 border border-slate-800 rounded-xl p-4 text-xs font-light text-slate-400 leading-relaxed fade-in";
+            explDiv.innerHTML = `<strong class="text-finance-gold">💡 硬核解析：</strong>${qData.explanation}`;
+            optionsContainer.appendChild(explDiv);
+
+            document.getElementById('quizNextBtn').classList.remove('hidden');
+        }
+
+        function nextQuizQuestion() {
+            currentQuizIndex++;
+            if (currentQuizIndex < quizQuestions.length) {
+                loadQuizQuestion();
+            } else {
+                showQuizResult();
+            }
+        }
+
+        function showQuizResult() {
+            document.getElementById('quiz-screen-question').classList.add('hidden');
+            document.getElementById('quiz-screen-result').classList.remove('hidden');
+
+            document.getElementById('quizScoreText').innerText = `得分 : ${quizScore} / ${quizQuestions.length}`;
+
+            const emojiEl = document.getElementById('quizResultEmoji');
+            const titleEl = document.getElementById('quizResultTitle');
+            const descEl = document.getElementById('quizResultDesc');
+
+            if (quizScore === 5) {
+                emojiEl.innerText = "👑";
+                titleEl.innerText = "驚天財金大亨！";
+                descEl.innerText = "五題全部答對！你對全租房危機、化債機制、利差套利博弈的理解已經達到了極致，可以直接到華爾街操盤去啦！";
+            } else if (quizScore >= 3) {
+                emojiEl.innerText = "🎓";
+                titleEl.innerText = "資深財金高材生！";
+                descEl.innerText = "表現非常出色！大框架邏輯全部拿捏，一些精細結構如 VIE、巨災定價也難不倒你，知識體系建設非常成功！";
+            } else {
+                emojiEl.innerText = "☕";
+                titleEl.innerText = "初窺門徑的小萌新";
+                descEl.innerText = "是不是開小差啦？快去資源分類專題裡吃吃土、充實一下知識庫，相信你重新測驗一定能天靈蓋閃金光！";
+            }
+        }
+
+        function resetQuiz() {
+            document.getElementById('quiz-screen-result').classList.add('hidden');
+            document.getElementById('quiz-screen-start').classList.remove('hidden');
+        }
+
+
+        // ==================== 5. 初始化入口 ====================
+        window.onload = function() {
+            // 渲染靜態組件
+            renderGlossary();
+            renderResources();
+            renderFAQ();
+
+            // 啟動模擬器默認運算
+            runJeonseSim();
+            runCarrySim();
+        }
+    </script>
+</body>
+</html>
